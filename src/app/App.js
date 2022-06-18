@@ -8,7 +8,8 @@ class App extends Component{
         this.state = {
             title: '',
             description: '',
-            tasks: []
+            tasks: [],
+            _id: ''
         };
 
         this.addTask = this.addTask.bind(this);
@@ -16,22 +17,43 @@ class App extends Component{
     };
 
     addTask(event) {
-        fetch('/api/tasks', {
-            method:'POST',
-            body: JSON.stringify(this.state),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
+        if(this.state._id){
+            fetch(`/api/tasks/${this.state._id}`, {
+                method:'PUT',
+                body: JSON.stringify(this.state),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+    
+            })
+            .then(res => res.json())
+            .then(data => {
+                M.toast({html: 'tarea guardada'})
+                this.setState({title:'', description:''})
+                this.fetchTask();
+            });
 
-        })
-        .then(res => res.json())
-        .then(data => {
-            M.toast({html: 'tarea guardada'})
-            this.setState({title:'', description:''})
-            this.fetchTask();
-        })
-        .catch(err => console.log(err));
+        } 
+        else {
+            fetch('/api/tasks', {
+                method:'POST',
+                body: JSON.stringify(this.state),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+    
+            })
+            .then(res => res.json())
+            .then(data => {
+                M.toast({html: 'tarea guardada'})
+                this.setState({title:'', description:''})
+                this.fetchTask();
+            })
+            .catch(err => console.log(err));
+        }
+
 
         event.preventDefault();
     }
@@ -59,7 +81,6 @@ class App extends Component{
                })
                .then(res => res.json())
                .then(data => {
-                console.log(data);
                 M.toast({html: 'Task Deleted'});
                 this.fetchTask();
                });
@@ -76,8 +97,15 @@ class App extends Component{
                 'Content-Type':'application/json'
             }
            })
-            .then(res=>res.json())
-            .then(data=>console.log(data));
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    title: data.title,
+                    description: data.description,
+                    _id: data._id
+
+                })
+            });
     }
 
     handleChange(event) {
