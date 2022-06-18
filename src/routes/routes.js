@@ -19,7 +19,7 @@ router.post('/',async (req, res) => {
     const {title, description} = req.body;
     const task = new Task({  title, description  })
     await task.save();
-    res.json({status: 'Tarea guardada'})
+    res.json({status: 'task saved'})
 })
 
 router.put('/:id', async (req,res) => {
@@ -27,12 +27,12 @@ router.put('/:id', async (req,res) => {
     const newTask = {title,description};
     await Task.findByIdAndUpdate(req.params.id,newTask);
    
-    res.json({status: 'tarea actualizada'});
+    res.json({status: 'task updated'});
 });
 
 router.delete('/:id', async (req, res) =>  {
     await Task.findByIdAndRemove( req.params.id);
-    res.json({status: 'deleted task'});
+    res.json({status: 'task deleted'});
 })
 
 module.exports = router;
